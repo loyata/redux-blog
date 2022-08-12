@@ -7,43 +7,42 @@ const postsURL = "https://jsonplaceholder.typicode.com/posts"
 //promise
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async ()=>{
     const response = await axios.get(postsURL);
-    // console.log(response)
     return response.data;
 })
 
-export const addNewPosts = createAsyncThunk('posts/addNewPosts', async (initalPost)=>{
-    const response = await axios.post(postsURL, initalPost);
-    console.log(response)
+export const addNewPosts = createAsyncThunk('posts/addNewPosts', async (initialPost)=>{
+    const response = await axios.post(postsURL, initialPost);
+    alert(response.data)
     return response.data
 
+})
+
+export const editPosts = createAsyncThunk('posts/editPosts', async (initialPost)=>{
+    // console.log(initialPost)
+    const response = await axios.put(`${postsURL}/${initialPost.id}`, initialPost);
+    console.log(response.data)
+    return response.data
+})
+
+export const deletePosts = createAsyncThunk('posts/deletePosts', async (initialPost)=>{
+    // console.log(initialPost)
+    const response = await axios.delete(`${postsURL}/${initialPost.id}`);
+    // console.log(response)
+    if (response?.status === 200)  return initialPost;
+    else return `${response?.status}:${response?.statusText}`
 })
 
 export const postsSlice = createSlice({
     name:'posts',
     initialState:{
-        posts:[
-            // {
-            // id:'134567',
-            // title:'Learn Redux Toolkit',
-            // content: "I've heard great things.",
-            // userId:'',
-            // date:sub(new Date(), {minutes: 10}).toISOString(),
-            // reactions:{
-            //     thumbsUp: 0,
-            //     wow: 0,
-            //     heart: 0,
-            //     rocket: 0,
-            //     coffee: 0
-            //     }
-            // }
-        ],
+        posts:[],
         status:'idle',
         error: null
     },
     reducers:{
         addPostForm:{
             reducer:(state, action) => {
-                console.log(state.posts)
+                // console.log(state.posts)
                 state.posts.push(action.payload);
             },
             prepare:(input) => {
@@ -72,10 +71,10 @@ export const postsSlice = createSlice({
         })
             .addCase(fetchPosts.fulfilled, (state, action) => {
             state.status = 'succeeded';
-            // let min = 1;
-            const loadPosts = action.payload.map(post => {
-                post.id = nanoid()
-                post.date = new Date().toISOString()
+            let min = 1;
+            console.log(action.payload.length)
+            const loadedPosts = action.payload.map(post => {
+                post.date = sub(new Date(), { minutes: min++ }).toISOString();
                 post.reactions = {
                         thumbsUp: 0,
                         wow: 0,
@@ -85,7 +84,7 @@ export const postsSlice = createSlice({
                     }
                     return post;
             })
-            state.posts = state.posts.concat(loadPosts);
+            state.posts = [...loadedPosts];
         })
             .addCase(fetchPosts.rejected, (state, action) => {
             state.status = "failed";
@@ -102,8 +101,25 @@ export const postsSlice = createSlice({
                         rocket: 0,
                         coffee: 0
                     }
-
                     state.posts.push(newPost)
+            })
+            .addCase(editPosts.fulfilled, (state, action) => {
+                const newPost = action.payload;
+                newPost.userId = Number(newPost.userId)
+                newPost.date = new Date().toISOString();
+                newPost.reactions = {
+                        thumbsUp: 0,
+                        wow: 0,
+                        heart: 0,
+                        rocket: 0,
+                        coffee: 0
+                    }
+                const otherPosts = state.posts.filter(post => post.id !== newPost.id)
+                state.posts = [...otherPosts, newPost]
+            })
+            .addCase(deletePosts.fulfilled, (state, action) => {
+                // console.log(action.payload)
+                state.posts = [...state.posts.filter(post => post.id != action.payload.id)]
             })
     }
 })

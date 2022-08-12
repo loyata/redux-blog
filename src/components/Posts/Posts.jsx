@@ -12,11 +12,11 @@ function Posts() {
     const postsError = useSelector(selectAllError)
 
 
-    useEffect(()=>{
-        if(postsStatus === 'idle') {
-            dispatch(fetchPosts());
-        }
-    },[postsStatus, dispatch])
+    // useEffect(()=>{
+    //     if(postsStatus === 'idle') {
+    //         dispatch(fetchPosts());
+    //     }
+    // },[postsStatus, dispatch])
 
     let content;
     if(postsStatus === 'loading') content = (<p>Loading...</p>)

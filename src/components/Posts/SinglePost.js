@@ -2,14 +2,15 @@ import React from 'react';
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButtons";
-import {useSelector} from "react-redux";
-import {selectPostById} from "./postsSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {Link, useParams} from "react-router-dom";
 
 
+const SinglePost = () => {
 
-const SinglePost = ({id}) => {
+    const {id} = useParams();
 
-    const post = useSelector(state => selectPostById(state, id));
+    const post = useSelector(state => state.posts.posts.find(post => post.id == id))
 
     if(!post) return (<section><h2>Page not found</h2></section>)
 
@@ -17,12 +18,13 @@ const SinglePost = ({id}) => {
 
         <article key={post.id}>
             <h3>{post.title}</h3>
-            <p>{post.content}</p>
+            <p>{post.body}</p>
             <p className="postCredit">
                 <PostAuthor userId={post.userId}/>
                 <TimeAgo timeStamp={post.date}/>
             </p>
             <ReactionButtons id={post.id}/>
+            <Link to={`edit`}>Edit post</Link>
         </article>
 
     );

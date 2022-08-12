@@ -7,8 +7,10 @@ import {store} from "./app/store.js"
 import {Provider} from "react-redux";
 import {fetchUsers} from "./components/Users/UsersSlice";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {fetchPosts} from "./components/Posts/postsSlice";
 
 store.dispatch(fetchUsers())
+store.dispatch(fetchPosts());
 
 
 
