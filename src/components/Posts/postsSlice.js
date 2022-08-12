@@ -113,5 +113,6 @@ export const {addPostForm, reactionAdd} = postsSlice.actions;
 export const selectAllPosts = (state) => state.posts.posts;
 export const selectAllStatus = (state) => state.posts.status;
 export const selectAllError = (state) => state.posts.error;
+export const selectPostById = (state, id) => state.posts.find(post => id === post.id)
 
 export default postsSlice.reducer;
